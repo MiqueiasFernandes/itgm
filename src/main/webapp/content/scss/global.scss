@@ -1,4 +1,209 @@
 
+
+
+.visivel{
+    display: initial;
+}
+.invisivel{
+    display: none;
+}
+
+.ribbon{
+    display: none;
+}
+
+$sideWidth: 300px;
+
+#wrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.sidebar {
+    margin-top: 60px;
+    z-index: 1000;
+    position: fixed;
+    margin-left: - $sideWidth;
+    width: 0;
+    height: 100%;
+    overflow-y: hidden;
+    background: #353d47;
+    opacity: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    display: inline-block;
+    height: calc(100vh - 60px);
+    overflow-x: auto;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar .user-info {
+    padding: 13px 15px 12px 15px;
+    white-space: nowrap;
+    position: relative;
+    border-bottom: 1px solid  #6c6c6c;
+    background-image: url(../images/mb-bg-fb-07.png);
+    background-size: cover;
+    height: 140px;
+}
+
+.sidebar .user-info .image img {
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    border-radius: 50%;
+    vertical-align: bottom !important;
+}
+
+.sidebar .user-info .info-container {
+    cursor: default;
+    display: block;
+    position: relative;
+    top: 25px;
+}
+
+.sidebar .user-info .info-container .name {
+    white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 14px;
+    max-width: 200px;
+    color: #fff;
+}
+
+.sidebar .user-info .info-container .email {
+    white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 12px;
+    max-width: 200px;
+    color: #fff;
+}
+
+
+.sidebar .user-info .info-container .fixSidebar {
+    position: absolute;
+    right: -3px;
+    bottom: -12px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    -ms-box-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+    color: #fff;
+}
+
+
+.sidebar .menu {
+    position: relative;
+    overflow-y: auto;
+    height: calc(100vh - 250px);
+}
+
+.sidebar .menu .list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.sidebar .menu .level1{
+    font-weight: 900;
+}
+
+.sidebar .menu li{
+    color: white;
+    padding: 15px;
+}
+
+.sidebar .menu li:hover, .sidebar .menu .list:active, .sidebar .menu .active{
+    background: darkslategrey;
+}
+
+.sidebar .menu .list .header {
+    background: #006958;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+    color: white;
+}
+
+
+.sidebar .footer {
+    background-color: #fff;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #eee;
+    padding: 15px;
+    overflow: hidden;
+    height: 70px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding-top: 70px;
+}
+
+#wrapper.toggled .sidebar {
+    width: $sideWidth;
+    margin-left: 0px;
+    opacity: 1;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+@media(max-width:767px){
+    #overlay.toggled {
+        display: block;
+    }
+}
+
+#wrapper.toggled #page-content-wrapper {
+    position: relative;
+}
+
+@media(min-width:768px) {
+    #wrapper.toggled #page-content-wrapper {
+        padding-left: $sideWidth;
+        -webkit-transition: all 0.5s ease;
+        -moz-transition: all 0.5s ease;
+        -o-transition: all 0.5s ease;
+        transition: all 0.5s ease;
+    }
+}
+
+
+
+
+
+#overlay {
+    background:rgba(0,0,0,0.3);
+    display:none;
+    width:100%;
+    height:100%;
+    position: fixed;
+    top:0;
+    left:0;
+    z-index:999;
+}
+
+
+/// end wraper edited by mfernandes
+
+
+
+
 /* ==============================================================
 Bootstrap tweaks
 ===============================================================*/
@@ -37,6 +242,8 @@ Generic styles
     padding: 1.5%;
     margin-top: 20px;
     border: none;
+    /*box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);*/
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .error {

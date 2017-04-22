@@ -21,7 +21,10 @@ import {
     ProfileService,
     PageRibbonComponent,
     ActiveMenuDirective,
-    ErrorComponent
+    ErrorComponent,
+    SidebarComponent,
+    SidebarService,
+    FabAddComponent
 } from './layouts';
 
 @NgModule({
@@ -41,9 +44,12 @@ import {
         ErrorComponent,
         PageRibbonComponent,
         ActiveMenuDirective,
-        FooterComponent
+        FooterComponent,
+        SidebarComponent,
+        FabAddComponent,
     ],
     providers: [
+        SidebarService,
         ProfileService,
         customHttpProvider(),
         PaginationConfig,

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, URLSearchParams, BaseRequestOptions } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { Observable, Subject } from 'rxjs/Rx';
 
 import { Projeto } from './projeto.model';
 @Injectable()
 export class ProjetoService {
 
     private resourceUrl = 'api/projetos';
-
+    private observeProjeto = new Subject<Projeto>();
+    observeProjeto$ = this.observeProjeto.asObservable();
+    private projetoAtivo: Projeto = null;
     constructor(private http: Http) { }
 
     create(projeto: Projeto): Observable<Projeto> {
@@ -33,7 +35,7 @@ export class ProjetoService {
     query(req?: any): Observable<Response> {
         const options = this.createRequestOption(req);
         return this.http.get(this.resourceUrl, options)
-        ;
+            ;
     }
 
     delete(id: number): Observable<Response> {
@@ -54,4 +56,14 @@ export class ProjetoService {
         }
         return options;
     }
+
+    setProjetoAtivo(projeto: Projeto) {
+        this.projetoAtivo = projeto;
+        this.observeProjeto.next(projeto);
+    }
+
+    getProjetoAtivo(): Projeto {
+        return this.projetoAtivo;
+    }
+
 }

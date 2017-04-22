@@ -22,6 +22,10 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.multipart.MultipartFile;
+import com.itgm.service.jriaccess.Itgmrest;
+import com.itgm.domain.Projeto;
+
 /**
  * REST controller for managing Base.
  */
@@ -32,7 +36,7 @@ public class BaseResource {
     private final Logger log = LoggerFactory.getLogger(BaseResource.class);
 
     private static final String ENTITY_NAME = "base";
-        
+
     private final BaseRepository baseRepository;
 
     public BaseResource(BaseRepository baseRepository) {
@@ -53,11 +57,38 @@ public class BaseResource {
         if (base.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new base cannot already have an ID")).body(null);
         }
+
+        if (base.getProjeto() == null) {
+            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "invaliduser", "Informe o projeto para criar o novo cenario.")).body(null);
+        }
+
         Base result = baseRepository.save(base);
+
+        Projeto projeto = result.getProjeto();
+
+        if (Itgmrest.createNew(
+            projeto.getUser(),
+            projeto.getNome(),
+            "*",
+            "*",
+            "bases/" + result.getId() + "/",
+            result.toString())) {
+            String codname = Itgmrest.getCodNome(projeto.getUser());
+            String comp = codname + "/" + projeto.getNome();
+            if (((String) Itgmrest.listFiles(comp + "/*/*"))
+                .contains(comp + "/" + "bases/" + result.getId() + "/" + ".info")) {
+                result.setLocal(comp + "/" + "bases/" + result.getId() + "/");
+                result = updateBase(result).getBody();
+            } else {
+                return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "ITGMRestfalhou", "Erro ao tentar criar nova base.")).body(null);
+            }
+        }
+
         return ResponseEntity.created(new URI("/api/bases/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
+
 
     /**
      * PUT  /bases : Updates an existing base.
@@ -91,7 +122,8 @@ public class BaseResource {
     @Timed
     public ResponseEntity<List<Base>> getAllBases(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Bases");
-        Page<Base> page = baseRepository.findAll(pageable);
+//        Page<Base> page = baseRepository.findAll(pageable);
+        Page<Base> page = baseRepository.findByUserIsCurrentUser(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/bases");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -120,8 +152,33 @@ public class BaseResource {
     @Timed
     public ResponseEntity<Void> deleteBase(@PathVariable Long id) {
         log.debug("REST request to delete Base : {}", id);
+        Base base = getBase(id).getBody();
+        Projeto projeto = base.getProjeto();
+        Itgmrest.removeDIR(
+            Itgmrest.getCodNome(projeto.getUser()),
+            projeto.getNome(),
+            "*",
+            "*",
+            base.getId() + "/",
+            "bases/");
+
         baseRepository.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+    }
+
+    @PostMapping("/bases/send")
+    public ResponseEntity<String> baseUpload(
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("usuario") String usuario,
+        @RequestParam("projeto") String projeto,
+        @RequestParam("nome") String nome,
+        @RequestParam("id") String id
+    ) {
+        if (!Itgmrest.sendFile(usuario + "/" + projeto + "/*/*/" + nome, "bases/" + id + "/", (file))) {
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<String>(
+            "{\"sucesso\":\"base enviada\"}", HttpStatus.OK);
     }
 
 }

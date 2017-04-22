@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, URLSearchParams, BaseRequestOptions } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { Observable, Subject } from 'rxjs/Rx';
 
 import { Cenario } from './cenario.model';
 @Injectable()
 export class CenarioService {
 
     private resourceUrl = 'api/cenarios';
+    private cenario: Cenario;
+    private observeCenario = new Subject<Cenario>();
+    observeCenario$ = this.observeCenario.asObservable();
 
     constructor(private http: Http) { }
 
@@ -33,7 +36,7 @@ export class CenarioService {
     query(req?: any): Observable<Response> {
         const options = this.createRequestOption(req);
         return this.http.get(this.resourceUrl, options)
-        ;
+            ;
     }
 
     delete(id: number): Observable<Response> {
@@ -53,5 +56,14 @@ export class CenarioService {
             options.search = params;
         }
         return options;
+    }
+
+    setCenarioAtivo(cenario: Cenario) {
+        this.cenario = cenario;
+        this.observeCenario.next(cenario);
+    }
+
+    getCenarioAtivo(): Cenario {
+        return this.cenario;
     }
 }

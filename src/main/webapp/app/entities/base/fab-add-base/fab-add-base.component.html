@@ -1,0 +1,18 @@
+<div class="modal-header">
+    <h4 class="modal-title">Adicionar nova Base</h4>
+    <button aria-label="Close" data-dismiss="modal" class="close" type="button" (click)="close()"><span aria-hidden="true">x</span>
+    </button>
+</div>
+<div class="modal-body">
+    <jhi-alert></jhi-alert>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="form-group">
+                <label class="form-control-label" for="arquivo" >Arquivo</label>
+                <input [ngClass]="{visivel: !onLoad, invisivel: onLoad}" (change)="setFile($event)" type="file" class="form-control" id="arquivo"  placeholder="arquivo a importart">
+                <img src="../../../../content/images/load.gif" alt="carregando..." [ngClass]="{visivel: onLoad, invisivel: !onLoad}">
+            </div>
+            <button (click)="adicionarBase()" class="btn btn-primary">adicionar</button>
+        </div>
+    </div>
+</div>

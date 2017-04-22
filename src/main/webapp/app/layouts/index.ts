@@ -8,3 +8,6 @@ export * from './profiles/page-ribbon.component';
 export * from './profiles/profile.service';
 export * from './profiles/profile-info.model';
 export * from './layout-routing.module';
+export * from './sidebar/sidebar.component';
+export * from './sidebar/sidebar.service';
+export * from './fab-add/fab-add.component';

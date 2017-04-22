@@ -1,0 +1,55 @@
+<div class="modal-header">
+    <h4 class="modal-title">Criar novo modelo</h4>
+    <button aria-label="Close" data-dismiss="modal" class="close" type="button" (click)="close()"><span aria-hidden="true">x</span>
+    </button>
+</div>
+<div class="modal-body">
+    <jhi-alert></jhi-alert>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input type="text" class="form-control"  id="nome" placeholder="digite o nome do modelo" [(ngModel)]="modelo.nome">
+            </div>
+
+            <div class="form-group">
+                <label for="cor">Cor</label>
+                <input type="color" class="form-control"  id="cor" [(ngModel)]="modelo.cor">
+            </div>
+
+            <div class="form-group">
+                <label for="formula">Formula</label>
+                <span class="input-group-addon">y2~</span>
+                <input type="text" class="form-control"  id="formula" placeholder="y1+b1" [(ngModel)]="modelo.formula">
+            </div>
+
+            <div class="form-group">
+                <label for="funcao">Funcao</label>
+                <input type="text" class="form-control"  id="funcao" placeholder="digite o nome do cenario" [(ngModel)]="modelo.funcaoRegressao">
+            </div>
+
+            <div class="form-group">
+                <label for="variaveis">Variaveis</label>
+                <input type="text" class="form-control"  id="variaveis" placeholder="digite o nome do cenario" [(ngModel)]="modelo.variaveis">
+            </div>
+
+            <div class="form-group">
+                <label for="palpite">Palpite</label>
+                <input type="text" class="form-control"  id="palpite" placeholder="digite o nome do cenario" [(ngModel)]="modelo.palpite">
+            </div>
+
+            <div class="form-group">
+                <label for="parametros">Parametros</label>
+                <input type="text" class="form-control"  id="parametros" placeholder="digite o nome do cenario" [(ngModel)]="modelo.parametros">
+            </div>
+
+            <div class="form-group">
+                <label for="requires">Requires</label>
+                <input type="text" class="form-control"  id="requires" placeholder="digite o nome do cenario" [(ngModel)]="modelo.requires">
+            </div>
+
+            <button (click)="criarCenario()" class="btn btn-primary">criar</button>
+        </div>
+    </div>
+</div>

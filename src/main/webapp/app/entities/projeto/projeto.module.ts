@@ -15,6 +15,8 @@ import {
     projetoRoute,
     projetoPopupRoute,
     ProjetoResolvePagingParams,
+    FabAddProjetoComponent,
+    SelecionarProjetoComponent,
 } from './';
 
 const ENTITY_STATES = [
@@ -35,6 +37,8 @@ const ENTITY_STATES = [
         ProjetoDeleteDialogComponent,
         ProjetoPopupComponent,
         ProjetoDeletePopupComponent,
+        FabAddProjetoComponent,
+        SelecionarProjetoComponent,
     ],
     entryComponents: [
         ProjetoComponent,
@@ -42,6 +46,8 @@ const ENTITY_STATES = [
         ProjetoPopupComponent,
         ProjetoDeleteDialogComponent,
         ProjetoDeletePopupComponent,
+        FabAddProjetoComponent,
+        SelecionarProjetoComponent,
     ],
     providers: [
         ProjetoService,

@@ -25,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
 
+import org.springframework.web.multipart.MultipartFile;
+import com.itgm.service.jriaccess.Itgmrest;
+
 /**
  * REST controller for managing the current user's account.
  */
@@ -126,7 +129,7 @@ public class AccountResource {
      */
     @PostMapping("/account")
     @Timed
-    public ResponseEntity saveAccount(@Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity saveAccount(@RequestBody UserDTO userDTO) {
         Optional<User> existingUser = userRepository.findOneByEmail(userDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getLogin().equalsIgnoreCase(userDTO.getLogin()))) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("user-management", "emailexists", "Email already in use")).body(null);
@@ -199,4 +202,19 @@ public class AccountResource {
             password.length() >= ManagedUserVM.PASSWORD_MIN_LENGTH &&
             password.length() <= ManagedUserVM.PASSWORD_MAX_LENGTH;
     }
+
+    @PostMapping("/account/image")
+        public ResponseEntity<String> imageUpload(
+                @RequestParam("file") MultipartFile file) {
+            User user = userService.getUserWithAuthorities();
+            String codName = Itgmrest.getCodNome(user);
+            String fileN = "foto" + Itgmrest.getFileExt(file.getOriginalFilename());
+            String dir = "data/";
+            String res = "";
+            if (!Itgmrest.sendFile(codName + "/*/*/*/" + fileN, dir, (file))
+                    || ((res = Itgmrest.publicFile(codName, "*", "*", "*", dir, fileN)) == null)) {
+                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<String>("{\"image\":\"http://" + Itgmrest.getIP() + ":8099/temp/" + res + "\"}", HttpStatus.OK);
+        }
 }

@@ -32,7 +32,7 @@ public class TerminalResource {
     private final Logger log = LoggerFactory.getLogger(TerminalResource.class);
 
     private static final String ENTITY_NAME = "terminal";
-        
+
     private final TerminalRepository terminalRepository;
 
     public TerminalResource(TerminalRepository terminalRepository) {
@@ -91,7 +91,7 @@ public class TerminalResource {
     @Timed
     public ResponseEntity<List<Terminal>> getAllTerminals(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Terminals");
-        Page<Terminal> page = terminalRepository.findAll(pageable);
+        Page<Terminal> page = terminalRepository.findByUserIsCurrentUser(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/terminals");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

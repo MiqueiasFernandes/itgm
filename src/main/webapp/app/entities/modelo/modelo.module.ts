@@ -15,6 +15,7 @@ import {
     modeloRoute,
     modeloPopupRoute,
     ModeloResolvePagingParams,
+    FabAddModeloComponent,
 } from './';
 
 const ENTITY_STATES = [
@@ -35,6 +36,7 @@ const ENTITY_STATES = [
         ModeloDeleteDialogComponent,
         ModeloPopupComponent,
         ModeloDeletePopupComponent,
+        FabAddModeloComponent,
     ],
     entryComponents: [
         ModeloComponent,
@@ -42,6 +44,7 @@ const ENTITY_STATES = [
         ModeloPopupComponent,
         ModeloDeleteDialogComponent,
         ModeloDeletePopupComponent,
+        FabAddModeloComponent,
     ],
     providers: [
         ModeloService,

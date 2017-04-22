@@ -8,6 +8,8 @@ import { JhiLanguageHelper, Principal, LoginModalService, LoginService } from '.
 
 import { VERSION, DEBUG_INFO_ENABLED } from '../../app.constants';
 
+import {SidebarService} from '../sidebar/sidebar.service';
+
 @Component({
     selector: 'jhi-navbar',
     templateUrl: './navbar.component.html',
@@ -31,7 +33,8 @@ export class NavbarComponent implements OnInit {
         private principal: Principal,
         private loginModalService: LoginModalService,
         private profileService: ProfileService,
-        private router: Router
+        private router: Router,
+        private sidebarService: SidebarService
     ) {
         this.version = DEBUG_INFO_ENABLED ? 'v' + VERSION : '';
         this.isNavbarCollapsed = true;
@@ -69,6 +72,7 @@ export class NavbarComponent implements OnInit {
         this.collapseNavbar();
         this.loginService.logout();
         this.router.navigate(['']);
+        this.sidebarService.closeSidebar(true);
     }
 
     toggleNavbar() {
@@ -77,5 +81,9 @@ export class NavbarComponent implements OnInit {
 
     getImageUrl() {
         return this.isAuthenticated() ? this.principal.getImageUrl() : null;
+    }
+
+    toogleSidebar() {
+        this.sidebarService.toogleSidebar();
     }
 }

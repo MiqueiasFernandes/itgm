@@ -1,0 +1,48 @@
+<div class="sidebar" *ngIf="isUserAuthenticated()">
+
+    <div class="user-info">
+        <div class="image" *ngIf="image">
+            <img [src]="image"  alt="{{nome}}" width="48" height="48">
+        </div>
+        <div class="info-container">
+            <div class="name"  (click)="configurar()">
+                {{nome}}
+            </div>
+            <div class="email"  (click)="configurar()">{{email}}</div>
+            <div class="fixSidebar" (click)="toogleBlockSideBar()">
+                <i [ngClass]="{'fa' : true,  'fa-lock' : isSidebarFixed , 'fa-unlock-alt' : !isSidebarFixed}" aria-hidden="true">
+                </i>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu">
+        <!--<jhi-alert></jhi-alert>-->
+        <ul class="list">
+            <li class="header" (click)="selecionar()">
+                {{projeto ? projeto.nome : 'selecione um projeto'}} > {{cenario ? cenario.nome : 'selecione um cenario'}}
+            </li>
+            <li  class="nivel1" (click)="loadAll()">
+                Bases
+                <ol>
+                    <li *ngFor="let base of bases ;trackBy: trackId">
+                        {{base.nome}}
+                    </li>
+                </ol>
+            </li>
+            <li class="nivel1">
+                Modelos
+            </li>
+            <li  class="nivel1">
+                Scripts
+            </li>
+            <li  class="nivel1">
+                Arquivos
+            </li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        (C) UFES
+    </div>
+</div>

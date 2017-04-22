@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, URLSearchParams, BaseRequestOptions } from '@angular/http';
+import {Http, Response, URLSearchParams, BaseRequestOptions, RequestOptions, RequestMethod} from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 
 import { Base } from './base.model';
@@ -32,8 +32,7 @@ export class BaseService {
 
     query(req?: any): Observable<Response> {
         const options = this.createRequestOption(req);
-        return this.http.get(this.resourceUrl, options)
-        ;
+        return this.http.get(this.resourceUrl, options);
     }
 
     delete(id: number): Observable<Response> {
@@ -53,5 +52,14 @@ export class BaseService {
             options.search = params;
         }
         return options;
+    }
+    sendBase(base: Base, file: File): Observable<Response> {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append("usuario", base.projeto.user.login);
+        formData.append("projeto", base.projeto.nome);
+        formData.append("nome", base.nome);
+        formData.append("id", base.id);
+        return this.http.post(this.resourceUrl + '/send', formData);
     }
 }
