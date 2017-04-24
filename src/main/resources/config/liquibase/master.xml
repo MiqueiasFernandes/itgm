@@ -12,6 +12,7 @@
     <include file="classpath:config/liquibase/changelog/20170419170603_added_entity_ModeloExclusivo.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170419170744_added_entity_Script.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170419170920_added_entity_Terminal.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170422002512_added_entity_Customize.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="classpath:config/liquibase/changelog/20170419165549_added_entity_constraints_Projeto.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170419165705_added_entity_constraints_Cenario.xml" relativeToChangelogFile="false"/>
@@ -20,5 +21,6 @@
     <include file="classpath:config/liquibase/changelog/20170419170603_added_entity_constraints_ModeloExclusivo.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170419170744_added_entity_constraints_Script.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170419170920_added_entity_constraints_Terminal.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170422002512_added_entity_constraints_Customize.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

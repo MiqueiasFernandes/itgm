@@ -13,8 +13,8 @@
                     <i class="fa fa-caret-down" aria-hidden="true"></i>
                 </button>
                 <ul class="dropdown-menu" (click)="toogleDropdown()" [ngClass]="{visivel: visivel}">
-                    <li *ngFor="let projeto of projetos ;trackBy: trackId" class="dropdown-item">
-                      <div (click)="selecionar(projeto)">{{projeto.nome}}</div>
+                    <li *ngFor="let projeto of projetos ;trackBy: trackId" class="dropdown-item" (click)="selecionar(projeto)">
+                      <div>{{projeto.nome}}</div>
                     </li>
                 </ul>
             </div>

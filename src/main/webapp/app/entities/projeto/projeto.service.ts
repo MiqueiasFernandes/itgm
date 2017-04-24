@@ -3,6 +3,9 @@ import { Http, Response, URLSearchParams, BaseRequestOptions } from '@angular/ht
 import { Observable, Subject } from 'rxjs/Rx';
 
 import { Projeto } from './projeto.model';
+import { EventManager } from 'ng-jhipster';
+import {Customize, CustomizeService} from '../customize/';
+import {CenarioService} from "../cenario/cenario.service";
 @Injectable()
 export class ProjetoService {
 
@@ -10,7 +13,27 @@ export class ProjetoService {
     private observeProjeto = new Subject<Projeto>();
     observeProjeto$ = this.observeProjeto.asObservable();
     private projetoAtivo: Projeto = null;
-    constructor(private http: Http) { }
+    constructor(
+        private http: Http,
+        private eventManager: EventManager,
+        private customizeService: CustomizeService,
+        private cenarioService: CenarioService,
+    ) {
+        this.eventManager.subscribe('logout', () => { this.setProjetoAtivo(null); });
+        this.eventManager.subscribe('authenticationSuccess', () => {
+            this.customizeService.getCustomize().subscribe((customize: Customize) => {
+                if (!customize) {
+                    this.setProjetoAtivo(null);
+                } else {
+                    this.find(customize.projeto)
+                        .subscribe(
+                            (projeto: Projeto) => this.setProjetoAtivo(projeto),
+                            () => this.setProjetoAtivo(null)
+                        );
+                }
+            });
+        });
+    }
 
     create(projeto: Projeto): Observable<Projeto> {
         const copy: Projeto = Object.assign({}, projeto);
@@ -60,6 +83,8 @@ export class ProjetoService {
     setProjetoAtivo(projeto: Projeto) {
         this.projetoAtivo = projeto;
         this.observeProjeto.next(projeto);
+        this.customizeService.customizeProjeto(projeto ? projeto.id : 0);
+        this.cenarioService.setCenarioAtivo(null);
     }
 
     getProjetoAtivo(): Projeto {

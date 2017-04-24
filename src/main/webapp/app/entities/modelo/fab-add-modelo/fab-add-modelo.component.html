@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <h4 class="modal-title">Criar novo modelo</h4>
+    <h4 class="modal-title">Cadastrar modelo {{modelo.nome}}</h4>
     <button aria-label="Close" data-dismiss="modal" class="close" type="button" (click)="close()"><span aria-hidden="true">x</span>
     </button>
 </div>
@@ -9,47 +9,47 @@
         <div class="col-md-8 offset-md-2">
 
             <div class="form-group">
-                <label for="nome">Nome</label>
-                <input type="text" class="form-control"  id="nome" placeholder="digite o nome do modelo" [(ngModel)]="modelo.nome">
+            <label for="nome">Nome</label>
+            <input type="text" class="form-control"  id="nome" placeholder="digite o nome do modelo" [(ngModel)]="modelo.nome">
             </div>
 
             <div class="form-group">
-                <label for="cor">Cor</label>
-                <input type="color" class="form-control"  id="cor" [(ngModel)]="modelo.cor">
+            <label for="cor">Cor</label>
+            <input type="color" class="form-control"  id="cor" [(ngModel)]="modelo.cor">
             </div>
 
             <div class="form-group">
-                <label for="formula">Formula</label>
-                <span class="input-group-addon">y2~</span>
-                <input type="text" class="form-control"  id="formula" placeholder="y1+b1" [(ngModel)]="modelo.formula">
+            <label for="formula">Formula</label>
+            <span class="input-group-addon">y2~</span>
+            <input type="text" class="form-control"  id="formula" placeholder="y1+b1" [(ngModel)]="modelo.formula">
             </div>
 
             <div class="form-group">
-                <label for="funcao">Funcao</label>
-                <input type="text" class="form-control"  id="funcao" placeholder="digite o nome do cenario" [(ngModel)]="modelo.funcaoRegressao">
+            <label for="funcao">Funcao</label>
+            <input type="text" class="form-control"  id="funcao" placeholder="nlsLM" [(ngModel)]="modelo.funcao">
             </div>
 
             <div class="form-group">
-                <label for="variaveis">Variaveis</label>
-                <input type="text" class="form-control"  id="variaveis" placeholder="digite o nome do cenario" [(ngModel)]="modelo.variaveis">
+            <label for="variaveis">Variaveis</label>
+            <input type="text" class="form-control"  id="variaveis" placeholder="idade1,idade2,dap1,dap2" [(ngModel)]="modelo.variaveis">
             </div>
 
             <div class="form-group">
-                <label for="palpite">Palpite</label>
-                <input type="text" class="form-control"  id="palpite" placeholder="digite o nome do cenario" [(ngModel)]="modelo.palpite">
+            <label for="palpite">Palpite</label>
+            <input type="text" class="form-control"  id="palpite" placeholder="b1=0.1,b2=0.5" [(ngModel)]="modelo.palpite">
             </div>
 
             <div class="form-group">
-                <label for="parametros">Parametros</label>
-                <input type="text" class="form-control"  id="parametros" placeholder="digite o nome do cenario" [(ngModel)]="modelo.parametros">
+            <label for="parametros">Parametros</label>
+            <input type="text" class="form-control"  id="parametros" placeholder="insira parametros requeridos pela função" [(ngModel)]="modelo.parametros">
             </div>
 
             <div class="form-group">
-                <label for="requires">Requires</label>
-                <input type="text" class="form-control"  id="requires" placeholder="digite o nome do cenario" [(ngModel)]="modelo.requires">
+            <label for="requires">Requires</label>
+            <input type="text" class="form-control"  id="requires" placeholder="ITGM,minpack.lm" [(ngModel)]="modelo.requires">
             </div>
 
-            <button (click)="criarCenario()" class="btn btn-primary">criar</button>
+            <button (click)="criarModelo()" class="btn btn-primary">criar</button>
         </div>
     </div>
 </div>

@@ -15,6 +15,7 @@ import {
     cenarioPopupRoute,
     CenarioResolvePagingParams,
     FabAddCenarioComponent,
+    SelecionarCenarioComponent,
 } from './';
 
 const ENTITY_STATES = [
@@ -35,6 +36,7 @@ const ENTITY_STATES = [
         CenarioPopupComponent,
         CenarioDeletePopupComponent,
         FabAddCenarioComponent,
+        SelecionarCenarioComponent,
     ],
     entryComponents: [
         CenarioComponent,
@@ -43,6 +45,7 @@ const ENTITY_STATES = [
         CenarioDeleteDialogComponent,
         CenarioDeletePopupComponent,
         FabAddCenarioComponent,
+        SelecionarCenarioComponent,
     ],
     providers: [
         CenarioService,

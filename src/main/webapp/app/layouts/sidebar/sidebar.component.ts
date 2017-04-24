@@ -1,18 +1,32 @@
 import {Component, OnInit} from '@angular/core';
 
-import {EventManager, AlertService} from 'ng-jhipster';
+import {EventManager} from 'ng-jhipster';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {Account, Principal} from '../../shared';
-import { Response } from '@angular/http';
 import {SidebarService} from './sidebar.service';
 
-import {ProjetoService, Projeto, CenarioService, Cenario, Base, BaseService, SelecionarProjetoComponent} from '../../entities/';
+import {
+    ProjetoService,
+    Projeto,
+    CenarioService,
+    Cenario,
+    Base,
+    BaseService,
+    Modelo,
+    ModeloService,
+    SelecionarProjetoComponent,
+    SelecionarCenarioComponent,
+    ModeloExclusivoService,
+    MapearModeloComponent
+} from '../../entities/';
+
 import { Router } from '@angular/router';
+import {ModeloExclusivo} from "../../entities/modelo-exclusivo/modelo-exclusivo.model";
 
 @Component({
     selector: 'jhi-sidebar',
     templateUrl: './sidebar.component.html',
-    styles: []
+    styleUrls: ['./sidebar.scss']
 })
 export class SidebarComponent implements OnInit {
 
@@ -22,7 +36,11 @@ export class SidebarComponent implements OnInit {
     image = null;
     projeto: Projeto;
     cenario: Cenario;
-    bases: Base[];
+    isbasesOpen = false;
+    bases: Base[] = null;
+    modelos: Modelo[] = null;
+    isModelosOpen = false;
+    modelosMapeados: number[] = [];
 
     constructor(
         private principal: Principal,
@@ -32,15 +50,21 @@ export class SidebarComponent implements OnInit {
         private cenarioService: CenarioService,
         private router: Router,
         private baseService: BaseService,
-        private alertService: AlertService,
         private modalService: NgbModal,
+        private modeloService: ModeloService,
+        private modeloExclusivoService: ModeloExclusivoService
     ) {
         this.isSidebarFixed = sidebarService.isLock();
         sidebarService.lockedObserver$.subscribe((lock: boolean) => {
             this.isSidebarFixed = lock;
         });
-        projetoService.observeProjeto$.subscribe((projeto: Projeto) => this.projeto = projeto);
-        cenarioService.observeCenario$.subscribe((cenario: Cenario) => this.cenario = cenario);
+        this.sidebarService.sidebarObserver$.subscribe(
+            () => this.updateProjetoECenario()
+        );
+        projetoService.observeProjeto$
+            .subscribe(() => this.updateProjetoECenario());
+        cenarioService.observeCenario$
+            .subscribe(() => this.updateProjetoECenario());
     }
 
     ngOnInit() {
@@ -54,7 +78,7 @@ export class SidebarComponent implements OnInit {
         });
     }
 
-    registerAuthenticationSuccess() {
+    private registerAuthenticationSuccess() {
         this.eventManager.subscribe('authenticationSuccess', (message) => {
             this.principal.identity().then((account: Account) => {
                 this.getDados(account);
@@ -63,7 +87,7 @@ export class SidebarComponent implements OnInit {
         });
     }
 
-    getDados(account: Account) {
+    private getDados(account: Account) {
         if (!account) {
             this.closeSidebar();
         } else {
@@ -75,54 +99,146 @@ export class SidebarComponent implements OnInit {
         }
     }
 
-    toogleBlockSideBar() {
+    private toogleBlockSideBar() {
         this.sidebarService.toogleSidebarFixed();
         if (!this.sidebarService.isLock()) {
             this.closeSidebar();
         }
     }
 
-    openSidebar() {
+    private openSidebar() {
         this.sidebarService.openSidebar();
     }
 
-    closeSidebar() {
+    private closeSidebar() {
         this.sidebarService.closeSidebar();
     }
 
-    isUserAuthenticated() {
+    private isUserAuthenticated() {
         return this.principal.isAuthenticated();
     }
 
-    configurar() {
+    private configurar() {
         if (!this.nome || this.nome === ' ' || !this.image) {
             this.router.navigate(['/settings']);
         }
     }
 
-    trackId(index: number, item: Base) {
+    trackId(index: number, item: any) {
         return item.id;
     }
 
-    loadAll() {
-        this.baseService.query({
-            page: 1,
-            size: 100,
-            sort: ['id']
-        }).subscribe(
-            (res: Response) => this.onSuccess(res.json()),
-            (res: Response) => this.onError(res.json())
-        );
+    loadAllBases() {
+        this.closeMenuModelos();
+        if (this.bases === null) {
+            this.baseService
+                .getBasesByProjeto(this.projetoService.getProjetoAtivo())
+                .subscribe(
+                    (bases: Base[]) => {
+                        this.bases = bases;
+                        this.isbasesOpen = true;
+                    },
+                    () => {
+                        this.bases = null;
+                        this.isbasesOpen = false;
+                    });
+        } else {
+            this.bases = null;
+            this.isbasesOpen = false;
+        }
     }
 
-    private onSuccess(data) {
-        this.bases = data;
-    }
-    private onError(error) {
-        this.alertService.error(error.message);
+    loadAllModelos() {
+        this.closeMenuBases();
+        if (this.modelos === null) {
+            this.modeloService.getAllModelos().subscribe(
+                (modelos: Modelo[]) => {
+                    this.modelos = modelos;
+                    this.isModelosOpen = true;
+                    modelos.forEach((modelo) => {
+                        this.modeloExclusivoService
+                            .getModeloExclusivoByModeloAndCenario(modelo, this.cenario)
+                            .subscribe((modelosExclusivos: ModeloExclusivo[]) => {
+                                if (
+                                    modelosExclusivos !== null &&
+                                    modelosExclusivos !== undefined &&
+                                    modelosExclusivos.length > 0) {
+                                    this.modelosMapeados.push(modelo.id);
+                                }
+                            });
+                    });
+                }
+            );
+        } else {
+            this.isModelosOpen = false;
+            this.modelos = null;
+        }
     }
 
-    selecionar() {
-        const modalRef = this.modalService.open(SelecionarProjetoComponent);
+    private selecionarProjeto() {
+        this.modalService.open(SelecionarProjetoComponent);
+    }
+
+    private selecionarCenario() {
+        if (this.projetoService.getProjetoAtivo()) {
+            this.modalService.open(SelecionarCenarioComponent);
+        }
+    }
+
+    private updateProjetoECenario() {
+        this.projeto = this.projetoService.getProjetoAtivo();
+        this.cenario = this.cenarioService.getCenarioAtivo();
+        this.closeMenuBases();
+        this.closeMenuModelos();
+    }
+
+    closeMenuModelos() {
+        this.isModelosOpen = false;
+        this.modelosMapeados = [];
+        this.modelos = null;
+    }
+
+    closeMenuBases() {
+        this.isbasesOpen = false;
+        this.bases = null;
+    }
+
+    isModeloMapeado(modelo: Modelo): boolean {
+        return (this.modelosMapeados.indexOf(modelo.id) > -1);
+    }
+
+    mapear(modelo: Modelo) {
+        if (!this.isModeloMapeado(modelo) && this.cenario) {
+            let ref: NgbModalRef;
+            ref = this.modalService.open(MapearModeloComponent);
+            ref.componentInstance.setModelo(modelo);
+            ref.componentInstance.setCenario(this.cenario);
+            ref.componentInstance.setProjeto(this.projeto);
+        }
+    }
+
+    excluirModelo(modelo: Modelo) {
+        this.modeloService.delete(modelo.id);
+    }
+
+    excluirBase(base: Base) {
+        this.baseService.delete(base.id).subscribe(() => {
+            alert('base excluida com sucesso!');
+        });
+    }
+
+    excluirMapeamento(modelo: Modelo) {
+        this.modeloExclusivoService.getModeloExclusivoByModeloAndCenario(modelo, this.cenario)
+            .subscribe(
+                (modelosExclusivos: ModeloExclusivo[]) => {
+                    modelosExclusivos.forEach((modeloEx: ModeloExclusivo) => {
+                        this.modeloExclusivoService.delete(modeloEx.id)
+                            .subscribe(() => {
+                                alert('o modelo foi desassociado!');
+                                this.closeMenuModelos();
+                            });
+                    });
+                }
+            );
     }
 }

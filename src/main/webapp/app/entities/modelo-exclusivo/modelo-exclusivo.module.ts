@@ -14,6 +14,7 @@ import {
     modeloExclusivoRoute,
     modeloExclusivoPopupRoute,
     ModeloExclusivoResolvePagingParams,
+    MapearModeloComponent,
 } from './';
 
 const ENTITY_STATES = [
@@ -33,6 +34,7 @@ const ENTITY_STATES = [
         ModeloExclusivoDeleteDialogComponent,
         ModeloExclusivoPopupComponent,
         ModeloExclusivoDeletePopupComponent,
+        MapearModeloComponent,
     ],
     entryComponents: [
         ModeloExclusivoComponent,
@@ -40,6 +42,7 @@ const ENTITY_STATES = [
         ModeloExclusivoPopupComponent,
         ModeloExclusivoDeleteDialogComponent,
         ModeloExclusivoDeletePopupComponent,
+        MapearModeloComponent
     ],
     providers: [
         ModeloExclusivoService,

@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
-
+import { Response } from '@angular/http';
 import {Subject} from 'rxjs/Subject';
 
 import {EventManager} from 'ng-jhipster';
 
 import {Principal} from '../../shared';
 
+import {CustomizeService, Customize} from '../../entities/customize/';
 
 @Injectable()
 export class SidebarService {
@@ -21,40 +22,68 @@ export class SidebarService {
 
     constructor(
         private principal: Principal,
-        private eventManager: EventManager
+        private eventManager: EventManager,
+        private customizeService: CustomizeService,
     ) {
-        this.openSidebar();
         this.registerAuthenticationSuccess();
-        this.lockSidebar();
+        this.registerLogout();
+        this.registerCustomizacao();
     }
 
-    private registerAuthenticationSuccess() {
-        this.eventManager.subscribe('authenticationSuccess', (message) => {
-            this.openSidebar();
+    private registerLogout() {
+        this.eventManager.subscribe('logout', () => {
+            this.isSidebarOpen = false;
+            this.updateSidebarOpen();
         });
     }
 
+    private registerCustomizacao() {
+        this.eventManager.subscribe('customizeListModification',
+            ()  => {
+                this.updateFromCustomize();
+            });
+    }
+
+    private registerAuthenticationSuccess() {
+        this.eventManager.subscribe('authenticationSuccess', () => {
+            this.updateFromCustomize();
+        });
+    }
+
+    private updateFromCustomize() {
+        this.customizeService.getCustomize().subscribe((customize: Customize) => {
+            if (!customize) {
+                return;
+            }
+            this.isLockedSidebar = customize.sidebar;
+            this.updateLockedSidebar();
+            this.openSidebar();
+        });
+    }
 
     openSidebar() {
         this.isSidebarOpen = this.principal.isAuthenticated();
         this.updateSidebarOpen();
     }
 
-    closeSidebar(force?: Boolean) {
+    closeSidebar() {
         /// Sidebar  / bloqueado
         ///   V      &    V     => v => aberto
         ///   V      &    f     => f => fechado
         ///   f      &    V     => f => fechado
         ///   f      &    f     => f => fechado
-        this.isSidebarOpen = (force ? false : (this.isSidebarOpen && this.isLockedSidebar));
+        this.isSidebarOpen =
+            this.principal.isAuthenticated() ?
+                (this.isSidebarOpen && this.isLockedSidebar) : false;
         this.updateSidebarOpen();
     }
 
     toogleSidebar() {
-        if (this.isSidebarOpen)
+        if (this.isSidebarOpen) {
             this.closeSidebar();
-        else
+        } else {
             this.openSidebar();
+        }
     }
 
     toogleSidebarFixed() {
@@ -72,12 +101,13 @@ export class SidebarService {
         this.updateLockedSidebar();
     }
 
-    updateSidebarOpen() {
+    private updateSidebarOpen() {
         this.observeSidebarStatus.next(this.isSidebarOpen);
     }
 
-    updateLockedSidebar() {
+    private updateLockedSidebar() {
         this.observeLockedStatus.next(this.isLockedSidebar);
+        this.customizeService.customizeSidebar(this.isLockedSidebar);
     }
 
     isOpen() {

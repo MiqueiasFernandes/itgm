@@ -5,3 +5,4 @@ export * from './projeto/';
 export * from './cenario/';
 export * from './base/';
 export * from './modelo/';
+export * from './modelo-exclusivo/';

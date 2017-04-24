@@ -47,6 +47,7 @@ public class CacheConfiguration {
             cm.createCache(com.itgm.domain.ModeloExclusivo.class.getName(), jcacheConfiguration);
             cm.createCache(com.itgm.domain.Script.class.getName(), jcacheConfiguration);
             cm.createCache(com.itgm.domain.Terminal.class.getName(), jcacheConfiguration);
+            cm.createCache(com.itgm.domain.Customize.class.getName(), jcacheConfiguration);
             // jhipster-needle-ehcache-add-entry
         };
     }

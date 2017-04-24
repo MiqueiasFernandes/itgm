@@ -3,12 +3,17 @@ import {Http, Response, URLSearchParams, BaseRequestOptions, RequestOptions, Req
 import { Observable } from 'rxjs/Rx';
 
 import { Base } from './base.model';
+import {Projeto, ProjetoService} from '../projeto/';
+
 @Injectable()
 export class BaseService {
 
     private resourceUrl = 'api/bases';
 
-    constructor(private http: Http) { }
+    constructor(
+        private http: Http,
+        private projetoService: ProjetoService,
+    ) { }
 
     create(base: Base): Observable<Base> {
         const copy: Base = Object.assign({}, base);
@@ -56,10 +61,37 @@ export class BaseService {
     sendBase(base: Base, file: File): Observable<Response> {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append("usuario", base.projeto.user.login);
-        formData.append("projeto", base.projeto.nome);
-        formData.append("nome", base.nome);
-        formData.append("id", base.id);
+        formData.append('usuario', base.projeto.user.login);
+        formData.append('projeto', base.projeto.nome);
+        formData.append('nome', base.nome);
+        formData.append('id', base.id);
         return this.http.post(this.resourceUrl + '/send', formData);
+    }
+
+    getBasesByProjeto(projeto: Projeto): Observable<Base[]> {
+        return this.query({
+            page: 0,
+            size: 100,
+            sort: ['id']
+        }).map(
+            (res: Response) => {
+                if (!projeto) {
+                    return [];
+                }
+                const bas: Base[] = res.json();
+                const bases: Base[] = [];
+                bas.forEach((base) => {
+                    if (base.projeto.id === projeto.id) {
+                        bases.push(base);
+                    }
+                });
+                return bases;
+            });
+    }
+
+    getFieldsOfBase(base: Base): Observable<string[]> {
+        return this.http.get(`${this.resourceUrl}/campos/${base.id}`)
+            .map((res: Response) => res.json() )
+            .map((data) => data.campos);
     }
 }

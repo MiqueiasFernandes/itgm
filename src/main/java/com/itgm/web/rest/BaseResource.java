@@ -122,7 +122,6 @@ public class BaseResource {
     @Timed
     public ResponseEntity<List<Base>> getAllBases(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Bases");
-//        Page<Base> page = baseRepository.findAll(pageable);
         Page<Base> page = baseRepository.findByUserIsCurrentUser(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/bases");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -177,8 +176,45 @@ public class BaseResource {
         if (!Itgmrest.sendFile(usuario + "/" + projeto + "/*/*/" + nome, "bases/" + id + "/", (file))) {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
+
+        ///obter campos da base
+        ///load('novoarq.RData')
+        ///write(gsub(', ', ',', toString(names(read.csv('arq1.csv')))), 'campos')
+        String codigo = "write(gsub(', ', ',', toString(names(read.csv('" + nome + "')))), 'campos')";
+
+        if(!nome.endsWith(".csv")){
+            codigo = "load('" + nome + "')\nwrite(gsub(', ', ',', toString(names(" + nome + "))), 'campos')";
+        }
+
+        Itgmrest.executarBatch(usuario + "/" + projeto + "/bases/" + id + "/", codigo);
+
         return new ResponseEntity<String>(
             "{\"sucesso\":\"base enviada\"}", HttpStatus.OK);
+    }
+
+    @GetMapping("/bases/campos/{id}")
+    @Timed
+    public ResponseEntity<String> getBaseFields(@PathVariable Long id) {
+        log.debug("REST request to get fields of Base : {}", id);
+        Base base = baseRepository.findOne(id);
+        String url = base.getProjeto().getUser().getLogin() + "/" + base.getProjeto().getNome() + "/*/*/campos";
+        String subdir =  "bases/" + base.getId() + "/";
+        String arquivo = Itgmrest.getContent(url, subdir);
+        if(arquivo != null && arquivo.length() > 0){
+            arquivo = arquivo.replaceAll("\n", "");
+        }
+        if(arquivo == null || arquivo.startsWith("error:")){
+            return new ResponseEntity<String>(
+                "{\"message\":\"" + arquivo.substring(6) + "\"}",
+                HttpStatus.BAD_REQUEST);
+        }
+        String campos[] = arquivo.split(",");
+        String saida = java.util.Arrays.toString(campos);
+        saida = saida.replaceAll(", ", "\",\"");
+        saida = saida.substring(1, saida.length() - 1);
+        saida = "[\"" + saida + "\"]";
+        return new ResponseEntity<String>(
+            "{\"campos\":" + saida + "}", HttpStatus.OK);
     }
 
 }

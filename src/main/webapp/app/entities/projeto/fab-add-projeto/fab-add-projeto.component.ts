@@ -15,7 +15,6 @@ export class FabAddProjetoComponent implements OnInit {
 
     nome: string;
     projeto: Projeto;
-    user: User;
 
     constructor(
         public activeModal: NgbActiveModal,
@@ -34,18 +33,15 @@ export class FabAddProjetoComponent implements OnInit {
     }
 
     extrairUsuario(account: Account) {
-        this.userService.query().subscribe(
-            (res: Response) => {
-                let users: User[] = res.json();
-                for (let i = 0; i < users.length; i++) {
-                    let user: User = users[i];
-                    if (user.login === account.login && user.email === account.email) {
-                        this.projeto.user = user;
-                        return;
-                    }
-                }
-                this.onError({message: 'impossivel localizar o usuario, reefetue o login.'})
-            }, (res: Response) => this.onError(res.json()));
+        this.userService
+            .getUser(account)
+            .subscribe(
+                (user: User) => {
+                    this.projeto.user = user;
+                },
+                (error) => {
+                    this.onError(error);
+                });
     }
 
     criarProjeto() {
@@ -61,7 +57,6 @@ export class FabAddProjetoComponent implements OnInit {
     private onError(error) {
         this.alertService.error(error.message);
     }
-
 
     private close() {
         this.activeModal.dismiss('closed');

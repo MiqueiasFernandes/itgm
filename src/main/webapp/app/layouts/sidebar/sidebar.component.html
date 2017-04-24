@@ -19,19 +19,60 @@
     <div class="menu">
         <!--<jhi-alert></jhi-alert>-->
         <ul class="list">
-            <li class="header" (click)="selecionar()">
-                {{projeto ? projeto.nome : 'selecione um projeto'}} > {{cenario ? cenario.nome : 'selecione um cenario'}}
+            <li class="header">
+                <span (click)="selecionarProjeto()">{{projeto ? projeto.nome : 'selecione um projeto'}}</span>
+                <i class="fa fa-caret-right" aria-hidden="true"></i>
+                <span (click)="selecionarCenario()">{{cenario ? cenario.nome : 'selecione um cenario'}}</span>
             </li>
-            <li  class="nivel1" (click)="loadAll()">
-                Bases
-                <ol>
-                    <li *ngFor="let base of bases ;trackBy: trackId">
-                        {{base.nome}}
+            <li [ngClass]="{'nivel1': true, 'ativo': isbasesOpen}" (click)="loadAllBases()">
+                Bases <i [ngClass]="{
+                         'fa' : true,
+                         'right': true,
+                         'fa-minus' : isbasesOpen,
+                         'fa-plus' : !isbasesOpen
+                         }" aria-hidden="true"></i>
+                <ul class="list" *ngIf="bases">
+                    <li *ngFor="let base of bases ;trackBy: trackId" class="nivel2">
+                        {{base.nome}} ({{base.id}})
+
+
+                        <button type="submit"
+                                [routerLink]="['/', { outlets: { popup: 'base/'+ base.id + '/delete'} }]"
+                                replaceUrl="true"
+                                class="btn btn-danger btn-sm">
+                            <span class="fa fa-remove"></span>
+                            <span class="hidden-md-down" jhiTranslate="entity.action.delete">Delete</span>
+                        </button>
+
+                        <i class="fa fa-share" aria-hidden="true"></i>
+                        <i class="fa fa-trash trash" aria-hidden="true" (click)="excluirBase(base)"></i>
                     </li>
-                </ol>
+                </ul>
             </li>
-            <li class="nivel1">
-                Modelos
+            <li [ngClass]="{'nivel1': true, 'ativo': isModelosOpen}" (click)="loadAllModelos()">
+                Modelos <i [ngClass]="{
+                         'fa' : true,
+                         'right': true,
+                         'fa-minus' : isModelosOpen,
+                         'fa-plus' : !isModelosOpen
+                         }" aria-hidden="true"></i>
+                <ul class="list" *ngIf="modelos">
+                    <li *ngFor="let modelo of modelos ;trackBy: trackId" class="nivel2" (click)="mapear(modelo)">
+                        {{modelo.nome}} ({{modelo.id}})
+                        <i class="fa"  [ngClass]="{'fa-check': isModeloMapeado(modelo)}" aria-hidden="true" (click)="excluirMapeamento(modelo)"></i>
+
+                        <button type="submit"
+                                [routerLink]="['/', { outlets: { popup: 'modelo/'+ modelo.id + '/delete'} }]"
+                                replaceUrl="true"
+                                class="btn btn-danger btn-sm">
+                            <span class="fa fa-remove"></span>
+                            <span class="hidden-md-down" jhiTranslate="entity.action.delete">Delete</span>
+                        </button>
+
+                        <i class="fa fa-share" aria-hidden="true"></i>
+                        <i class="fa fa-trash trash" aria-hidden="true" (click)="excluirModelo(modelo)"></i>
+                    </li>
+                </ul>
             </li>
             <li  class="nivel1">
                 Scripts

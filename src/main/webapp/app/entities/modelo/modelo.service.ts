@@ -33,7 +33,7 @@ export class ModeloService {
     query(req?: any): Observable<Response> {
         const options = this.createRequestOption(req);
         return this.http.get(this.resourceUrl, options)
-        ;
+            ;
     }
 
     delete(id: number): Observable<Response> {
@@ -53,5 +53,17 @@ export class ModeloService {
             options.search = params;
         }
         return options;
+    }
+
+    getAllModelos(): Observable<Modelo[]> {
+        return this.query({
+            page: 0,
+            size: 100,
+            sort: ['id']
+        }).map(
+            (res: Response) => {
+                const modelos: Modelo[] = res.json();
+                return modelos;
+            });
     }
 }

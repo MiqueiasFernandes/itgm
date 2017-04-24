@@ -37,18 +37,28 @@ public class Itgmrest {
 
     public static String getIP() {
 //        if (IP == null || (time + (1000 * 60 * 60 * hours_to_update_ip)) < new Date().getTime()) {
-            String pagina = new RestTemplate().getForObject(urlIP, String.class);
-            String[] ip = pagina.split("segue o ip para acesso ao ITGM Rest ");
-            IP = ip[1].substring(0, ip[1].indexOf(":"));
+        String pagina = new RestTemplate().getForObject(urlIP, String.class);
+        String[] ip = pagina.split("segue o ip para acesso ao ITGM Rest ");
+        IP = ip[1].substring(0, ip[1].indexOf(":"));
 //            time = new Date().getTime();
 //        }
         return IP;
     }
 
+    public static String getContent(String url, String subdir) {
+        return new RestTemplate().getForObject(
+            "http://"
+                + getIP()
+                + local + "content/"
+                + url
+                + "?subdiretorio=" + (subdir == null ? "" : subdir),
+            String.class);
+    }
+
     public static boolean sendText(String url, String subdir, String content) {
         RestTemplate rt = new RestTemplate();
         String uri = new String(
-                "http://" + getIP() + local
+            "http://" + getIP() + local
                 + url
                 + "?subdiretorio=" + (subdir == null ? "" : subdir));
         String ret = rt.postForObject(uri, content, String.class);
@@ -58,7 +68,7 @@ public class Itgmrest {
     public static boolean sendFile(String url, String subdir, Object file) {
         RestTemplate rt = new RestTemplate();
         String uri = new String(
-                "http://" + getIP() + local
+            "http://" + getIP() + local
                 + url
                 + "?&subdiretorio=" + subdir);
         HttpHeaders headers = new HttpHeaders();
@@ -68,8 +78,8 @@ public class Itgmrest {
         HttpEntity<byte[]> entity = null;
         try {
             entity = new HttpEntity<byte[]>(
-                    ((MultipartFile) (file)).getBytes(),
-                    headers);
+                ((MultipartFile) (file)).getBytes(),
+                headers);
         } catch (Exception ex) {
             System.err.println("itgmrest:81 errror entity: " + ex);
         }
@@ -96,34 +106,34 @@ public class Itgmrest {
     }
 
     public static String publicFile(
-            String usuario,
-            String projeto,
-            String cenario,
-            String diretorio,
-            String subdiretorio,
-            String file) {
+        String usuario,
+        String projeto,
+        String cenario,
+        String diretorio,
+        String subdiretorio,
+        String file) {
         RestTemplate rt = new RestTemplate();
         String ret = rt
-                .getForObject(
-                        "http://" + getIP() + local
-                        + "file/"
-                        + usuario + "/"
-                        + projeto + "/"
-                        + cenario + "/"
-                        + diretorio + "/"
-                        + file + (subdiretorio == null ? "" : "?subdiretorio=" + subdiretorio), String.class);
+            .getForObject(
+                "http://" + getIP() + local
+                    + "file/"
+                    + usuario + "/"
+                    + projeto + "/"
+                    + cenario + "/"
+                    + diretorio + "/"
+                    + file + (subdiretorio == null ? "" : "?subdiretorio=" + subdiretorio), String.class);
         return (ret != null && ret.length() > 0 && !ret.isEmpty() && !ret.startsWith("error:")) ? ret : null;
     }
 
     public static boolean createNew(User user,
-            String projeto,
-            String cenario,
-            String diretorio,
-            String subdiretorio,
-            String conteudo) {
+                                    String projeto,
+                                    String cenario,
+                                    String diretorio,
+                                    String subdiretorio,
+                                    String conteudo) {
         String codnome = getCodNome(user);
         return sendText( ///codnome+ "/*/*/*/" + "user.data", "desc/",
-                codnome
+            codnome
                 + "/" + projeto
                 + "/" + cenario
                 + "/" + diretorio + "/" + ".info", subdiretorio, conteudo);
@@ -131,19 +141,19 @@ public class Itgmrest {
 
     public static String listFiles(String path) {
         return new RestTemplate().getForObject(
-                "http://" + getIP() + local
+            "http://" + getIP() + local
                 ///list/{usuario}/{projeto}/{cenario}/{diretorio}
                 + "list/" + path,
-                String.class);
+            String.class);
     }
 
     public static void removeDIR(
-            String usuario,
-            String projeto,
-            String cenario,
-            String diretorio,
-            String file,
-            String subdiretorio) {
+        String usuario,
+        String projeto,
+        String cenario,
+        String diretorio,
+        String file,
+        String subdiretorio) {
 
         String path = usuario;
 
@@ -159,7 +169,19 @@ public class Itgmrest {
             path = "file/" + usuario + "/" + projeto + "/" + cenario + "/" + diretorio + "/" + file;
         }
         new RestTemplate().delete("http://" + getIP() + local + path
-                + "?subdiretorio=" + (subdiretorio != null ? subdiretorio : ""));
+            + "?subdiretorio=" + (subdiretorio != null ? subdiretorio : ""));
+    }
+
+    public static void executarBatch(String endereco, String codigo){
+        String query = "?&parametros=BATCH&parametros=log.txt&parametros=DEBUG&memoria=20&cpu=1&disco=20&salvar=true";
+        try {
+            new RestTemplate().put(
+                "http://" + getIP() + local + endereco + query,
+                java.net.URLEncoder.encode(codigo, "UTF-8")
+            );
+        }catch (Exception ex){
+
+        }
     }
 
 }
